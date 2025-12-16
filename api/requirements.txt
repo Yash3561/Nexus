@@ -1,0 +1,21 @@
+# Core
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+python-dotenv>=1.0.0
+
+# Confluent Kafka (Official Client - NOT kafka-python)
+confluent-kafka>=2.6.0
+
+# Google Cloud / Vertex AI
+google-cloud-aiplatform>=1.71.0
+google-generativeai>=0.8.0
+
+# Datadog (official tracing)
+ddtrace>=2.15.0
+
+# Async support
+httpx>=0.27.0
+aiofiles>=24.1.0
+
+# Utilities
+pydantic>=2.9.0
