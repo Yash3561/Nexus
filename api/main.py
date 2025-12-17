@@ -71,15 +71,28 @@ async def health():
 @tracer.wrap(service="nexus-api", resource="process_voice")
 async def process_voice_input(input_data: VoiceInput):
     """
-    Main processing endpoint - The Tracer Bullet
-    Flow: Voice Text -> Gemini -> Response
+    Main processing endpoint with ECHO memory
+    Flow: Voice Text -> Memory Context -> Gemini -> Store Response -> Return
     """
     try:
         from services.gemini import generate_response
-        response = await generate_response(input_data.text)
+        from services.memory import get_memory
+        
+        # Get memory for this user
+        memory = get_memory(input_data.user_id, input_data.session_id)
+        
+        # Get context from memory
+        context = memory.get_full_context()
+        
+        # Generate response with memory context
+        response = await generate_response(input_data.text, context)
+        response_text = response["text"]
+        
+        # Store the exchange in memory
+        memory.add_exchange(input_data.text, response_text)
         
         return NexusResponse(
-            text=response["text"],
+            text=response_text,
             confidence=response.get("confidence", 1.0),
             sources=response.get("sources", [])
         )
@@ -91,18 +104,28 @@ async def process_voice_input(input_data: VoiceInput):
 @tracer.wrap(service="nexus-api", resource="process_voice_tts")
 async def process_with_voice(input_data: VoiceInput):
     """
-    Full voice round-trip: Text -> Gemini -> TTS -> Audio
-    Returns both text and audio
+    Full voice round-trip with ECHO memory
+    Text -> Memory -> Gemini -> Store -> TTS -> Audio
     """
     import base64
     
     try:
         from services.gemini import generate_response
         from services.elevenlabs import text_to_speech
+        from services.memory import get_memory
         
-        # Get Gemini response
-        response = await generate_response(input_data.text)
+        # Get memory for this user
+        memory = get_memory(input_data.user_id, input_data.session_id)
+        
+        # Get context from memory
+        context = memory.get_full_context()
+        
+        # Get Gemini response with memory context
+        response = await generate_response(input_data.text, context)
         response_text = response["text"]
+        
+        # Store the exchange in memory
+        memory.add_exchange(input_data.text, response_text)
         
         # Convert to speech
         audio_bytes = text_to_speech(response_text)
@@ -127,6 +150,7 @@ async def process_with_voice(input_data: VoiceInput):
 async def startup_event():
     print("[NEXUS] API Starting...")
     print("[NEXUS] Gemini: Active")
+    print("[NEXUS] ECHO Memory: Active")
     print("[NEXUS] ElevenLabs TTS: Active")
     if not DD_ENABLED:
         print("[NEXUS] Datadog: DISABLED (Local Mode)")
