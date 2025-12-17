@@ -82,6 +82,15 @@ async def gaia_status():
         "location": weather.get("location", "New York")
     }
 
+@app.get("/api/gaia/news")
+async def gaia_news(category: str = "general"):
+    """Get news headlines from GAIA"""
+    from services.gaia import get_gaia
+    
+    gaia = get_gaia()
+    news = await gaia.get_news_headlines(category=category)
+    return news
+
 @app.post("/api/process", response_model=NexusResponse)
 @tracer.wrap(service="nexus-api", resource="process_voice")
 async def process_voice_input(input_data: VoiceInput):
@@ -152,8 +161,14 @@ async def process_with_voice(input_data: VoiceInput):
         gaia = get_gaia()
         gaia_context = await gaia.build_context()
         
+        # Get PROMETHEUS context (web search for real-time info)
+        from services.prometheus import search_if_needed
+        search_context = await search_if_needed(input_data.text)
+        
         # Combine contexts
         full_context = ""
+        if search_context:
+            full_context += f"[Web search results]\n{search_context}\n\n"
         if gaia_context:
             full_context += f"[Real-time data]\n{gaia_context}\n\n"
         if memory_context:
