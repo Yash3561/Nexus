@@ -67,6 +67,21 @@ async def health():
         "datadog": "active" if DD_ENABLED else "disabled (local mode)"
     }
 
+@app.get("/api/gaia/status")
+async def gaia_status():
+    """Get current GAIA data (weather, time) for UI display"""
+    from services.gaia import get_gaia
+    
+    gaia = get_gaia()
+    time_data = gaia.get_current_time()
+    weather = await gaia.get_weather()
+    
+    return {
+        "time": time_data,
+        "weather": weather,
+        "location": weather.get("location", "New York")
+    }
+
 @app.post("/api/process", response_model=NexusResponse)
 @tracer.wrap(service="nexus-api", resource="process_voice")
 async def process_voice_input(input_data: VoiceInput):

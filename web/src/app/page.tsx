@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import VoiceInterface from "@/components/VoiceInterface";
 import ChatDisplay from "@/components/ChatDisplay";
 
@@ -15,44 +15,34 @@ export default function Home() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<"connecting" | "connected" | "error">("connecting");
 
-  // Check API connection on mount
-  useState(() => {
+  // Check API connection on mount - FIXED: using useEffect instead of useState
+  useEffect(() => {
     fetch("http://localhost:8000/health")
       .then(() => setConnectionStatus("connected"))
       .catch(() => setConnectionStatus("error"));
-  });
+  }, []);
 
-  // Audio control - store reference to allow stopping
+  // Audio control
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // Play audio with control
   const playAudio = useCallback((base64Audio: string) => {
     try {
-      // Stop any existing audio
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
       }
-
       const audio = new Audio(`data:audio/mp3;base64,${base64Audio}`);
       audioRef.current = audio;
       setIsPlaying(true);
-
       audio.onended = () => setIsPlaying(false);
       audio.onerror = () => setIsPlaying(false);
-
-      audio.play().catch((e) => {
-        console.error("Audio playback error:", e);
-        setIsPlaying(false);
-      });
-    } catch (error) {
-      console.error("Failed to play audio:", error);
+      audio.play().catch(() => setIsPlaying(false));
+    } catch {
       setIsPlaying(false);
     }
   }, []);
 
-  // Stop audio playback
   const stopAudio = useCallback(() => {
     if (audioRef.current) {
       audioRef.current.pause();
@@ -62,102 +52,80 @@ export default function Home() {
   }, []);
 
   const handleVoiceInput = useCallback(async (text: string) => {
-    // Add user message
-    setMessages((prev) => [
-      ...prev,
-      { role: "user", content: text, timestamp: new Date() },
-    ]);
-
+    setMessages((prev) => [...prev, { role: "user", content: text, timestamp: new Date() }]);
     setIsProcessing(true);
 
     try {
-      // Use voice endpoint for TTS response
       const response = await fetch("http://localhost:8000/api/process-with-voice", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text,
-          user_id: "demo-user",
-          session_id: "demo-session",
-        }),
+        body: JSON.stringify({ text, user_id: "demo-user", session_id: "demo-session" }),
       });
-
       const data = await response.json();
-
-      // Add NEXUS response
-      setMessages((prev) => [
-        ...prev,
-        { role: "nexus", content: data.text, timestamp: new Date() },
-      ]);
-
-      // Play audio if available
-      if (data.audio) {
-        playAudio(data.audio);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "nexus",
-          content: "I'm having trouble connecting. Make sure the API is running.",
-          timestamp: new Date(),
-        },
-      ]);
+      setMessages((prev) => [...prev, { role: "nexus", content: data.text, timestamp: new Date() }]);
+      if (data.audio) playAudio(data.audio);
+    } catch {
+      setMessages((prev) => [...prev, { role: "nexus", content: "Connection error. Is the API running?", timestamp: new Date() }]);
     } finally {
       setIsProcessing(false);
     }
   }, [playAudio]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-black/50 border-b border-white/10">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div className="min-h-screen bg-[#1a1a1a] text-white">
+      {/* Minimal Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#1a1a1a]/95 backdrop-blur-sm border-b border-[#333]">
+        <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-purple-600 flex items-center justify-center">
-              <span className="text-xl">🌐</span>
+            <div className="w-8 h-8 rounded-lg bg-[#8ab4f8] flex items-center justify-center">
+              <svg className="w-5 h-5 text-[#1a1a1a]" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+              </svg>
             </div>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight">NEXUS</h1>
-              <p className="text-xs text-gray-400">Consciousness Layer</p>
-            </div>
+            <span className="text-lg font-medium text-white">NEXUS</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div
-              className={`w-2 h-2 rounded-full ${connectionStatus === "connected"
-                ? "bg-green-400"
-                : connectionStatus === "connecting"
-                  ? "bg-yellow-400 animate-pulse"
-                  : "bg-red-400"
-                }`}
-            />
-            <span className="text-xs text-gray-400 capitalize">
+          <div className="flex items-center gap-4">
+            <div className={`flex items-center gap-1.5 text-xs ${connectionStatus === "connected" ? "text-green-400" : connectionStatus === "connecting" ? "text-yellow-400" : "text-red-400"}`}>
+              <div className={`w-1.5 h-1.5 rounded-full ${connectionStatus === "connected" ? "bg-green-400" : connectionStatus === "connecting" ? "bg-yellow-400 animate-pulse" : "bg-red-400"}`} />
               {connectionStatus}
-            </span>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="pt-24 pb-32 px-6">
-        <div className="max-w-4xl mx-auto">
+      <main className="pt-16 pb-32 px-4">
+        <div className="max-w-3xl mx-auto">
           {/* Welcome State */}
           {messages.length === 0 && (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-cyan-400/20 to-purple-600/20 flex items-center justify-center mb-8 animate-pulse">
-                <span className="text-5xl">🌐</span>
+            <div className="flex flex-col items-center justify-center min-h-[70vh] text-center">
+              <div className="mb-8">
+                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-[#8ab4f8] to-[#c9a7ff] flex items-center justify-center">
+                  <svg className="w-8 h-8 text-[#1a1a1a]" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+                  </svg>
+                </div>
+                <h1 className="text-4xl font-normal text-[#e8eaed] mb-4">
+                  Hello, I&apos;m NEXUS
+                </h1>
+                <p className="text-[#9aa0a6] text-lg max-w-lg mx-auto">
+                  Your AI companion with memory. I remember our conversations,
+                  access real-time data, and learn about you over time.
+                </p>
               </div>
-              <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                Welcome to NEXUS
-              </h2>
-              <p className="text-gray-400 max-w-md mb-8">
-                I am your AI consciousness twin. I remember you, connect to real-time
-                Earth data, and synthesize all human knowledge.
-              </p>
-              <p className="text-sm text-gray-500">
-                Click the microphone or type to begin
-              </p>
+
+              {/* Capability chips */}
+              <div className="flex flex-wrap gap-3 justify-center text-sm">
+                <div className="px-4 py-2 rounded-full bg-[#2d2d2d] text-[#9aa0a6] border border-[#3c4043]">
+                  🧠 Remembers you
+                </div>
+                <div className="px-4 py-2 rounded-full bg-[#2d2d2d] text-[#9aa0a6] border border-[#3c4043]">
+                  🌍 Real-time data
+                </div>
+                <div className="px-4 py-2 rounded-full bg-[#2d2d2d] text-[#9aa0a6] border border-[#3c4043]">
+                  🔊 Voice responses
+                </div>
+              </div>
             </div>
           )}
 
@@ -166,7 +134,7 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Voice Interface (Fixed Bottom) */}
+      {/* Voice Interface */}
       <VoiceInterface
         onTranscript={handleVoiceInput}
         isProcessing={isProcessing}
