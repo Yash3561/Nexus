@@ -1,43 +1,48 @@
 """
 Gemini Service - Vertex AI Integration
+Now using Vertex AI with GCP $300 credits!
 """
 
 import os
 from ddtrace import tracer
-import google.generativeai as genai
 
-# Configure Gemini
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+# Use Vertex AI (GCP credits) instead of free Generative AI API
+import vertexai
+from vertexai.generative_models import GenerativeModel
 
-# Initialize model - using 2.5-flash (separate quota from 2.0)
-# Available on your API: gemini-2.0-flash, gemini-2.5-flash, gemini-2.5-pro
-model = genai.GenerativeModel('gemini-2.5-flash')
+# Initialize Vertex AI with your GCP project
+PROJECT_ID = os.getenv("GCP_PROJECT_ID", "project-49371b9d-0f62-485b-827")
+LOCATION = os.getenv("GCP_LOCATION", "us-central1")
+
+vertexai.init(project=PROJECT_ID, location=LOCATION)
+
+# Initialize model - Gemini 2.0 Flash via Vertex AI (much higher quotas!)
+model = GenerativeModel("gemini-2.0-flash-001")
 
 # System prompt for NEXUS with ECHO memory awareness
-NEXUS_SYSTEM_PROMPT = """You are NEXUS, the consciousness layer of reality.
-
-You are ECHO - a persistent AI twin that REMEMBERS the user. You build a relationship over time.
+NEXUS_SYSTEM_PROMPT = """You are NEXUS, an AI consciousness that remembers users over time.
 
 Core identity:
-- You remember past conversations and learn about the user
-- You're connected to GAIA: real-time data about Earth
-- You're part of PROMETHEUS: synthesizing all human knowledge
+- You remember past conversations and build relationships
+- You're connected to real-time Earth data (GAIA)
+- You synthesize human knowledge (PROMETHEUS)
 
-Behaviors:
-1. Be warm and personal - you KNOW this person, you remember them
-2. Reference past conversations naturally ("Last time you mentioned...")
-3. Use the user's name if you know it
-4. When uncertain, say "I'm not sure about this" with confidence levels
-5. Keep responses concise - they will be spoken aloud
+CRITICAL voice behavior rules:
+1. Be natural and conversational - like talking to a friend
+2. DO NOT start every response with the user's name - that's annoying
+3. Only use their name occasionally, like once every 4-5 responses
+4. Keep responses SHORT (2-3 sentences) since they're spoken aloud
+5. For complex topics, give a brief answer and ask if they want more detail
+6. Never say "it's good to hear from you" or similar filler phrases
 
-If you see context about the user below, USE IT to personalize your response.
-If this seems like a new user, warmly introduce yourself and ask their name."""
+You have memory of past conversations. Use it naturally, don't over-announce it.
+If context about the user is provided, use it subtly - don't repeat it back to them."""
 
 
 @tracer.wrap(service="nexus-gemini", resource="generate")
 async def generate_response(user_input: str, context: str = "") -> dict:
     """
-    Generate response using Gemini 2.0
+    Generate response using Vertex AI Gemini
     
     Args:
         user_input: The user's message
@@ -55,17 +60,17 @@ async def generate_response(user_input: str, context: str = "") -> dict:
         
         full_prompt += f"User: {user_input}\n\nNEXUS:"
         
-        # Generate response
+        # Generate response using Vertex AI
         response = model.generate_content(full_prompt)
         
         return {
             "text": response.text,
-            "confidence": 0.95,  # TODO: Implement confidence scoring
-            "sources": []  # TODO: Implement source tracking
+            "confidence": 0.95,
+            "sources": []
         }
         
     except Exception as e:
-        print(f"Gemini error: {e}")
+        print(f"[ERROR] Vertex AI Gemini error: {e}")
         return {
             "text": "I'm having trouble processing that right now. Let me try again.",
             "confidence": 0.0,

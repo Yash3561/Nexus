@@ -22,13 +22,42 @@ export default function Home() {
       .catch(() => setConnectionStatus("error"));
   });
 
-  // Audio playback function
+  // Audio control - store reference to allow stopping
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  // Play audio with control
   const playAudio = useCallback((base64Audio: string) => {
     try {
+      // Stop any existing audio
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+
       const audio = new Audio(`data:audio/mp3;base64,${base64Audio}`);
-      audio.play().catch((e) => console.error("Audio playback error:", e));
+      audioRef.current = audio;
+      setIsPlaying(true);
+
+      audio.onended = () => setIsPlaying(false);
+      audio.onerror = () => setIsPlaying(false);
+
+      audio.play().catch((e) => {
+        console.error("Audio playback error:", e);
+        setIsPlaying(false);
+      });
     } catch (error) {
       console.error("Failed to play audio:", error);
+      setIsPlaying(false);
+    }
+  }, []);
+
+  // Stop audio playback
+  const stopAudio = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+      setIsPlaying(false);
     }
   }, []);
 
@@ -97,10 +126,10 @@ export default function Home() {
           <div className="flex items-center gap-2">
             <div
               className={`w-2 h-2 rounded-full ${connectionStatus === "connected"
-                  ? "bg-green-400"
-                  : connectionStatus === "connecting"
-                    ? "bg-yellow-400 animate-pulse"
-                    : "bg-red-400"
+                ? "bg-green-400"
+                : connectionStatus === "connecting"
+                  ? "bg-yellow-400 animate-pulse"
+                  : "bg-red-400"
                 }`}
             />
             <span className="text-xs text-gray-400 capitalize">
@@ -141,6 +170,8 @@ export default function Home() {
       <VoiceInterface
         onTranscript={handleVoiceInput}
         isProcessing={isProcessing}
+        isPlaying={isPlaying}
+        onStopAudio={stopAudio}
       />
     </div>
   );
