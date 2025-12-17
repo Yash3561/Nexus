@@ -22,6 +22,16 @@ export default function Home() {
       .catch(() => setConnectionStatus("error"));
   });
 
+  // Audio playback function
+  const playAudio = useCallback((base64Audio: string) => {
+    try {
+      const audio = new Audio(`data:audio/mp3;base64,${base64Audio}`);
+      audio.play().catch((e) => console.error("Audio playback error:", e));
+    } catch (error) {
+      console.error("Failed to play audio:", error);
+    }
+  }, []);
+
   const handleVoiceInput = useCallback(async (text: string) => {
     // Add user message
     setMessages((prev) => [
@@ -32,7 +42,8 @@ export default function Home() {
     setIsProcessing(true);
 
     try {
-      const response = await fetch("http://localhost:8000/api/process", {
+      // Use voice endpoint for TTS response
+      const response = await fetch("http://localhost:8000/api/process-with-voice", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -49,6 +60,11 @@ export default function Home() {
         ...prev,
         { role: "nexus", content: data.text, timestamp: new Date() },
       ]);
+
+      // Play audio if available
+      if (data.audio) {
+        playAudio(data.audio);
+      }
     } catch (error) {
       console.error("Error:", error);
       setMessages((prev) => [
@@ -62,7 +78,7 @@ export default function Home() {
     } finally {
       setIsProcessing(false);
     }
-  }, []);
+  }, [playAudio]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white">
@@ -80,13 +96,12 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-2">
             <div
-              className={`w-2 h-2 rounded-full ${
-                connectionStatus === "connected"
+              className={`w-2 h-2 rounded-full ${connectionStatus === "connected"
                   ? "bg-green-400"
                   : connectionStatus === "connecting"
-                  ? "bg-yellow-400 animate-pulse"
-                  : "bg-red-400"
-              }`}
+                    ? "bg-yellow-400 animate-pulse"
+                    : "bg-red-400"
+                }`}
             />
             <span className="text-xs text-gray-400 capitalize">
               {connectionStatus}

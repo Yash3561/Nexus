@@ -40,14 +40,26 @@ export default function VoiceInterface({
     const [isListening, setIsListening] = useState(false);
     const [inputText, setInputText] = useState("");
     const [transcript, setTranscript] = useState("");
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const recognitionRef = useRef<SpeechRecognition | null>(null);
 
     useEffect(() => {
-        // Initialize Web Speech API
+        // Safety Check: Chrome Speech API requires HTTPS or Localhost
+        if (
+            typeof window !== "undefined" &&
+            window.location.protocol === "http:" &&
+            window.location.hostname !== "localhost" &&
+            window.location.hostname !== "127.0.0.1"
+        ) {
+            setErrorMsg("Voice requires localhost or HTTPS.");
+            return;
+        }
+
         if (typeof window !== "undefined" && "webkitSpeechRecognition" in window) {
             const SpeechRecognition = window.webkitSpeechRecognition;
             recognitionRef.current = new SpeechRecognition();
-            recognitionRef.current.continuous = true;
+            // Continuous false is often more stable for "Turn-based" chat
+            recognitionRef.current.continuous = false;
             recognitionRef.current.interimResults = true;
 
             recognitionRef.current.onresult = (event) => {
@@ -66,6 +78,7 @@ export default function VoiceInterface({
                 if (finalTranscript) {
                     setTranscript(finalTranscript);
                     onTranscript(finalTranscript);
+                    // Stop listening after valid input to process
                     setIsListening(false);
                     recognitionRef.current?.stop();
                 } else {
@@ -74,13 +87,20 @@ export default function VoiceInterface({
             };
 
             recognitionRef.current.onerror = (event) => {
-                console.error("Speech recognition error:", event.error);
+                console.warn("Speech recognition error:", event.error);
+                if (event.error === 'network') {
+                    setErrorMsg("Network error. Using text fallback.");
+                } else if (event.error === 'not-allowed') {
+                    setErrorMsg("Mic permission denied.");
+                }
                 setIsListening(false);
             };
 
             recognitionRef.current.onend = () => {
                 setIsListening(false);
             };
+        } else {
+            setErrorMsg("Browser not supported. Use Chrome.");
         }
 
         return () => {
@@ -89,13 +109,19 @@ export default function VoiceInterface({
     }, [onTranscript]);
 
     const toggleListening = () => {
+        setErrorMsg(null);
         if (isListening) {
             recognitionRef.current?.stop();
             setIsListening(false);
         } else {
             setTranscript("");
-            recognitionRef.current?.start();
-            setIsListening(true);
+            try {
+                recognitionRef.current?.start();
+                setIsListening(true);
+            } catch (e) {
+                console.error("Start error:", e);
+                setErrorMsg("Could not start microphone.");
+            }
         }
     };
 
@@ -110,6 +136,15 @@ export default function VoiceInterface({
     return (
         <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/95 to-transparent pt-8 pb-6 px-6">
             <div className="max-w-4xl mx-auto">
+                {/* Error Banner */}
+                {errorMsg && (
+                    <div className="mb-2 text-center">
+                        <span className="bg-red-500/10 text-red-400 px-3 py-1 rounded-full text-xs border border-red-500/20">
+                            {errorMsg}
+                        </span>
+                    </div>
+                )}
+
                 {/* Transcript Display */}
                 {transcript && isListening && (
                     <div className="mb-4 text-center">
@@ -125,7 +160,7 @@ export default function VoiceInterface({
                             type="text"
                             value={inputText}
                             onChange={(e) => setInputText(e.target.value)}
-                            placeholder="Type your message..."
+                            placeholder={errorMsg ? "Type message (Voice unavailable)" : "Type your message..."}
                             disabled={isProcessing || isListening}
                             className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-full text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-transparent transition-all disabled:opacity-50"
                         />
@@ -145,20 +180,12 @@ export default function VoiceInterface({
                         {isProcessing ? (
                             <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         ) : isListening ? (
-                            <svg
-                                className="w-7 h-7 text-white animate-pulse"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                            >
+                            <svg className="w-7 h-7 text-white animate-pulse" fill="currentColor" viewBox="0 0 24 24">
                                 <rect x="6" y="4" width="4" height="16" rx="2" />
                                 <rect x="14" y="4" width="4" height="16" rx="2" />
                             </svg>
                         ) : (
-                            <svg
-                                className="w-7 h-7 text-white"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                            >
+                            <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z" />
                             </svg>
                         )}
