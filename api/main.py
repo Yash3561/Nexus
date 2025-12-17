@@ -77,15 +77,27 @@ async def process_voice_input(input_data: VoiceInput):
     try:
         from services.gemini import generate_response
         from services.memory import get_memory
+        from services.gaia import get_gaia
         
         # Get memory for this user
         memory = get_memory(input_data.user_id, input_data.session_id)
         
-        # Get context from memory
-        context = memory.get_full_context()
+        # Get ECHO context (memory)
+        memory_context = memory.get_full_context()
         
-        # Generate response with memory context
-        response = await generate_response(input_data.text, context)
+        # Get GAIA context (real-time data)
+        gaia = get_gaia()
+        gaia_context = await gaia.build_context()
+        
+        # Combine contexts
+        full_context = ""
+        if gaia_context:
+            full_context += f"[Real-time data]\n{gaia_context}\n\n"
+        if memory_context:
+            full_context += f"{memory_context}"
+        
+        # Generate response with combined context
+        response = await generate_response(input_data.text, full_context)
         response_text = response["text"]
         
         # Store the exchange in memory
@@ -113,15 +125,27 @@ async def process_with_voice(input_data: VoiceInput):
         from services.gemini import generate_response
         from services.elevenlabs import text_to_speech
         from services.memory import get_memory
+        from services.gaia import get_gaia
         
         # Get memory for this user
         memory = get_memory(input_data.user_id, input_data.session_id)
         
-        # Get context from memory
-        context = memory.get_full_context()
+        # Get ECHO context (memory)
+        memory_context = memory.get_full_context()
         
-        # Get Gemini response with memory context
-        response = await generate_response(input_data.text, context)
+        # Get GAIA context (real-time data)
+        gaia = get_gaia()
+        gaia_context = await gaia.build_context()
+        
+        # Combine contexts
+        full_context = ""
+        if gaia_context:
+            full_context += f"[Real-time data]\n{gaia_context}\n\n"
+        if memory_context:
+            full_context += f"{memory_context}"
+        
+        # Get Gemini response with combined context
+        response = await generate_response(input_data.text, full_context)
         response_text = response["text"]
         
         # Store the exchange in memory
@@ -149,8 +173,9 @@ async def process_with_voice(input_data: VoiceInput):
 @app.on_event("startup")
 async def startup_event():
     print("[NEXUS] API Starting...")
-    print("[NEXUS] Gemini: Active")
+    print("[NEXUS] Gemini (Vertex AI): Active")
     print("[NEXUS] ECHO Memory: Active")
+    print("[NEXUS] GAIA Data Streams: Active")
     print("[NEXUS] ElevenLabs TTS: Active")
     if not DD_ENABLED:
         print("[NEXUS] Datadog: DISABLED (Local Mode)")
