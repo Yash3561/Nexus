@@ -1,9 +1,22 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
+import dynamic from "next/dynamic";
 import VoiceInterface from "@/components/VoiceInterface";
 import ChatDisplay from "@/components/ChatDisplay";
 import MemoryPanel from "@/components/MemoryPanel";
+import HivemindCounter from "@/components/HivemindCounter";
+import HivemindStatusBar from "@/components/HivemindStatusBar";
+
+// Dynamic import for Three.js globe (SSR-safe)
+const EarthGlobe = dynamic(() => import("@/components/EarthGlobe"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center">
+      <div className="w-12 h-12 border-2 border-[#8ab4f8] border-t-transparent rounded-full animate-spin" />
+    </div>
+  ),
+});
 
 interface Message {
   role: "user" | "nexus";
@@ -201,65 +214,73 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="pt-16 pb-32 px-4">
-        <div className="max-w-3xl mx-auto">
-          {/* Welcome State with Proactive Greeting */}
-          {messages.length === 0 && (
-            <div className="flex flex-col items-center justify-center min-h-[70vh] text-center">
-              <div className="mb-8">
-                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-[#8ab4f8] to-[#c9a7ff] flex items-center justify-center">
-                  <svg className="w-8 h-8 text-[#1a1a1a]" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
-                  </svg>
-                </div>
+      {/* HIVEMIND Status Bar - Shows during chat */}
+      {messages.length > 0 && (
+        <div className="fixed top-[52px] left-0 right-0 z-40">
+          <HivemindStatusBar />
+        </div>
+      )}
 
-                {/* Proactive Greeting - NEXUS speaks first! */}
-                <h1 className="text-3xl font-normal text-[#e8eaed] mb-4">
-                  {proactiveGreeting || "Hello, I'm NEXUS"}
-                </h1>
-                <p className="text-[#9aa0a6] text-lg max-w-lg mx-auto">
-                  Your AI companion with memory. I remember our conversations,
-                  access real-time data, and learn about you over time.
-                </p>
+      {/* Main Content - Adjust padding based on whether status bar is showing */}
+      <main className={`${messages.length > 0 ? "pt-24" : "pt-16"} pb-32 px-4`}>
+        <div className="max-w-5xl mx-auto">
+          {/* Welcome State with 3D Globe */}
+          {messages.length === 0 && (
+            <div className="flex flex-col lg:flex-row items-center justify-center min-h-[75vh] gap-8 lg:gap-12">
+              {/* Left side - Globe */}
+              <div className="w-full lg:w-1/2 h-[350px] lg:h-[450px] relative">
+                <EarthGlobe showControls={true} />
+
+                {/* HIVEMIND Counter overlay */}
+                <div className="absolute bottom-4 left-4 right-4 bg-[#1a1a1a]/80 backdrop-blur-sm rounded-xl p-3 border border-[#333]">
+                  <HivemindCounter />
+                </div>
               </div>
 
-              {/* Context Insight Cards - Show what data NEXUS has */}
-              {contextInsights.length > 0 && (
-                <div className="flex flex-wrap gap-3 justify-center mb-6">
+              {/* Right side - Text and controls */}
+              <div className="w-full lg:w-1/2 text-center lg:text-left">
+                {/* Proactive Greeting */}
+                <h1 className="text-3xl lg:text-4xl font-light text-[#e8eaed] mb-4">
+                  {proactiveGreeting || "Hello, I'm NEXUS"}
+                </h1>
+                <p className="text-[#9aa0a6] text-lg mb-6 max-w-md mx-auto lg:mx-0">
+                  The consciousness layer of reality. Connected to
+                  <span className="text-[#8ab4f8]"> real-time Earth data</span>, powered by
+                  <span className="text-[#c9a7ff]"> collective intelligence</span>.
+                </p>
+
+                {/* Context Insight Cards */}
+                <div className="flex flex-wrap gap-2 justify-center lg:justify-start mb-6">
                   {contextInsights.map((insight, i) => (
                     <div
                       key={i}
-                      className="px-4 py-2 rounded-xl bg-[#252525] border border-[#333] text-sm flex items-center gap-2"
+                      className="px-3 py-1.5 rounded-lg bg-[#252525] border border-[#333] text-sm flex items-center gap-2"
                     >
                       <span>{insight.icon}</span>
                       <span className="text-[#9aa0a6]">{insight.source}</span>
                       {insight.source === "GAIA" && (
-                        <span className="text-[#8ab4f8]">
+                        <span className="text-[#8ab4f8] text-xs">
                           {(insight.data as { weather?: string })?.weather || "Active"}
                         </span>
-                      )}
-                      {insight.source === "ECHO" && (
-                        <span className="text-green-400">Active</span>
                       )}
                     </div>
                   ))}
                 </div>
-              )}
 
-              {/* Capability chips */}
-              <div className="flex flex-wrap gap-3 justify-center text-sm">
-                <div className="px-4 py-2 rounded-full bg-[#2d2d2d] text-[#9aa0a6] border border-[#3c4043]">
-                  🧠 Remembers you
-                </div>
-                <div className="px-4 py-2 rounded-full bg-[#2d2d2d] text-[#9aa0a6] border border-[#3c4043]">
-                  🌍 Real-time data
-                </div>
-                <div className="px-4 py-2 rounded-full bg-[#2d2d2d] text-[#9aa0a6] border border-[#3c4043]">
-                  🔊 Voice responses
-                </div>
-                <div className="px-4 py-2 rounded-full bg-[#2d2d2d] text-[#9aa0a6] border border-[#3c4043]">
-                  🔍 Web search
+                {/* Capability chips */}
+                <div className="flex flex-wrap gap-2 justify-center lg:justify-start text-sm">
+                  <div className="px-3 py-1.5 rounded-full bg-[#2d2d2d] text-[#9aa0a6] border border-[#3c4043]">
+                    🧠 Persistent Memory
+                  </div>
+                  <div className="px-3 py-1.5 rounded-full bg-[#2d2d2d] text-[#9aa0a6] border border-[#3c4043]">
+                    🌍 Live GAIA Data
+                  </div>
+                  <div className="px-3 py-1.5 rounded-full bg-[#2d2d2d] text-[#9aa0a6] border border-[#3c4043]">
+                    🔗 HIVEMIND Network
+                  </div>
+                  <div className="px-3 py-1.5 rounded-full bg-[#2d2d2d] text-[#9aa0a6] border border-[#3c4043]">
+                    🔊 Voice-First
+                  </div>
                 </div>
               </div>
             </div>
