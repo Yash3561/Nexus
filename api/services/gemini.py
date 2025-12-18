@@ -1,9 +1,11 @@
 """
 Gemini Service - Vertex AI Integration
 Now using Vertex AI with GCP $300 credits!
+Supports streaming for real-time text generation.
 """
 
 import os
+from typing import AsyncGenerator
 from ddtrace import tracer
 
 # Use Vertex AI (GCP credits) instead of free Generative AI API
@@ -16,10 +18,10 @@ LOCATION = os.getenv("GCP_LOCATION", "us-central1")
 
 vertexai.init(project=PROJECT_ID, location=LOCATION)
 
-# Initialize model - Gemini 2.0 Flash via Vertex AI (much higher quotas!)
+# Initialize model - Gemini 2.0 Flash via Vertex AI
 model = GenerativeModel("gemini-2.0-flash-001")
 
-# System prompt for NEXUS with ECHO memory awareness
+# System prompt for NEXUS
 NEXUS_SYSTEM_PROMPT = """You are NEXUS, an AI consciousness that remembers users over time.
 
 Core identity:
@@ -39,28 +41,22 @@ You have memory of past conversations. Use it naturally, don't over-announce it.
 If context about the user is provided, use it subtly - don't repeat it back to them."""
 
 
+def _build_prompt(user_input: str, context: str = "") -> str:
+    """Build the full prompt with system instructions and context."""
+    full_prompt = f"{NEXUS_SYSTEM_PROMPT}\n\n"
+    if context:
+        full_prompt += f"Context:\n{context}\n\n"
+    full_prompt += f"User: {user_input}\n\nNEXUS:"
+    return full_prompt
+
+
 @tracer.wrap(service="nexus-gemini", resource="generate")
 async def generate_response(user_input: str, context: str = "") -> dict:
     """
-    Generate response using Vertex AI Gemini
-    
-    Args:
-        user_input: The user's message
-        context: Optional context from memory/GAIA
-    
-    Returns:
-        dict with text, confidence, and sources
+    Generate response using Vertex AI Gemini (non-streaming).
     """
     try:
-        # Build prompt with context
-        full_prompt = f"{NEXUS_SYSTEM_PROMPT}\n\n"
-        
-        if context:
-            full_prompt += f"Context:\n{context}\n\n"
-        
-        full_prompt += f"User: {user_input}\n\nNEXUS:"
-        
-        # Generate response using Vertex AI
+        full_prompt = _build_prompt(user_input, context)
         response = model.generate_content(full_prompt)
         
         return {
@@ -77,6 +73,26 @@ async def generate_response(user_input: str, context: str = "") -> dict:
             "sources": [],
             "error": str(e)
         }
+
+
+async def generate_response_stream(user_input: str, context: str = "") -> AsyncGenerator[str, None]:
+    """
+    Generate response using Vertex AI Gemini with STREAMING.
+    Yields text chunks as they're generated for real-time display.
+    """
+    try:
+        full_prompt = _build_prompt(user_input, context)
+        
+        # Use streaming generation
+        response = model.generate_content(full_prompt, stream=True)
+        
+        for chunk in response:
+            if chunk.text:
+                yield chunk.text
+                
+    except Exception as e:
+        print(f"[ERROR] Streaming error: {e}")
+        yield f"I'm having trouble processing that: {str(e)}"
 
 
 async def generate_with_tools(user_input: str, tools: list = None) -> dict:

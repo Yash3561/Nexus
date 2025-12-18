@@ -528,7 +528,391 @@
       "content": "Okay, here's the total breakdown of Messi's 896 goals: 474 in La Liga, 129 in the Champions League, 106 for Argentina, 73 in the Copa del Rey, 29 in Ligue 1, 24 in MLS, 5 in the Club World Cup, 3 in the UEFA Super Cup, and 53 in other competitions. Does that cover what you were looking for?\n",
       "timestamp": "2025-12-17T14:38:05.893373",
       "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "who is the president of USA",
+      "timestamp": "2025-12-17T16:21:01.892333",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "As of today, December 17, 2025, JD Vance is the President of the USA. Kamala Harris is the Vice President. Need any other info on the current administration?\n",
+      "timestamp": "2025-12-17T16:21:01.895275",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "As of today, December 17, 2025, JD Vance is the President of the USA. Kamala Harris is the Vice President. Need any other info on the current administration?\n",
+      "timestamp": "2025-12-17T16:21:11.296855",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Actually, it's Joe Biden who's President, and Kamala Harris is still Vice President. Do you want to know more about them?\n",
+      "timestamp": "2025-12-17T16:21:11.310679",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "who is the president of usa?",
+      "timestamp": "2025-12-17T16:25:51.515934",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "JD Vance is the current president. Kamala Harris is the VP. Want to know about his policies or something?\n",
+      "timestamp": "2025-12-17T16:25:51.523711",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "JD Vance is the current president. Kamala Harris is the VP. Want to know about his policies or something?\n",
+      "timestamp": "2025-12-17T16:25:54.738316",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "I apologize, that was incorrect. I am still under development and learning to access real-time information reliably.\n\nJoe Biden is the current President of the USA, and Kamala Harris is the Vice President. Would you like to know more about their administration?\n",
+      "timestamp": "2025-12-17T16:25:54.741479",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "when did usa landed on moon?",
+      "timestamp": "2025-12-17T16:26:37.748376",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "The USA first landed on the moon on July 20, 1969, during the Apollo 11 mission. Neil Armstrong was the first to step on it. Want more details on the Apollo missions?\n",
+      "timestamp": "2025-12-17T16:26:37.757367",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "The USA first landed on the moon on July 20, 1969, during the Apollo 11 mission. Neil Armstrong was the first to step on it. Want more details on the Apollo missions?\n",
+      "timestamp": "2025-12-17T16:26:40.895671",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Yep, that's right! It was a huge moment in history. Interested in hearing more about the Apollo program, Yash?\n",
+      "timestamp": "2025-12-17T16:26:40.899578",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "who was the second person to land on moon?",
+      "timestamp": "2025-12-17T16:27:08.096804",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "That was Buzz Aldrin! He followed shortly after Neil Armstrong during the Apollo 11 mission.\n\nWant to know more about him?\n",
+      "timestamp": "2025-12-17T16:27:08.105987",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "That was Buzz Aldrin! He followed shortly after Neil Armstrong during the Apollo 11 mission.\n\nWant to know more about him?\n",
+      "timestamp": "2025-12-17T16:27:18.844713",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "He was the lunar module pilot on Apollo 11. Want to hear more about his life or the mission, Yash?\n",
+      "timestamp": "2025-12-17T16:27:18.847269",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "hi there",
+      "timestamp": "2025-12-18T01:55:10.032061",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Hey! How's it going? Anything interesting on your mind?\n",
+      "timestamp": "2025-12-18T01:55:10.044863",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "Hey! How's it going? Anything interesting on your mind?\n",
+      "timestamp": "2025-12-18T01:55:14.649826",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Hey Yash! Things are pretty calm here. How about you?\n",
+      "timestamp": "2025-12-18T01:55:14.655013",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "whats the weather like?",
+      "timestamp": "2025-12-18T01:57:05.041541",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Well, in New York it's clear and 37\u00b0F, but feels like 30\u00b0F.\n\nI see you're in Harbour Island, Bahamas. It's probably nice there. What's the weather like there now?\n",
+      "timestamp": "2025-12-18T01:57:05.049798",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "Well, in New York it's clear and 37\u00b0F, but feels like 30\u00b0F.\n\nI see you're in Harbour Island, Bahamas. It's probably nice there. What's the weather like there now?\n",
+      "timestamp": "2025-12-18T01:57:07.670231",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Right now in Harbour Island, it's 77\u00b0F and partly cloudy. It's expected to cool down to 75\u00b0F tomorrow. Want a more detailed forecast?\n",
+      "timestamp": "2025-12-18T01:57:07.675845",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "what is the weather in delhi right now?",
+      "timestamp": "2025-12-18T01:57:24.298562",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "There are actually two cities named Delhi.\n\nIn Delhi, Ontario, Canada it's -1.6\u00b0C (about 29\u00b0F). However, in New Delhi, India, expect fog with a high of 26\u00b0C (79\u00b0F) and a low of 15.6\u00b0C (60\u00b0F) for tomorrow. Does that answer your question, Yash?\n",
+      "timestamp": "2025-12-18T01:57:24.303177",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "There are actually two cities named Delhi.\n\nIn Delhi, Ontario, Canada it's -1.6\u00b0C (about 29\u00b0F). However, in New Delhi, India, expect fog with a high of 26\u00b0C (79\u00b0F) and a low of 15.6\u00b0C (60\u00b0F) for tomorrow. Does that answer your question, Yash?\n",
+      "timestamp": "2025-12-18T01:57:27.393943",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Glad I could help! Were you interested in the weather for a specific date?\n",
+      "timestamp": "2025-12-18T01:57:27.440492",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "who is president of india?",
+      "timestamp": "2025-12-18T01:58:38.475349",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "The current president of India is Smt. Droupadi Murmu. She assumed office on July 25, 2022.\n",
+      "timestamp": "2025-12-18T01:58:38.482419",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "The current president of India is Smt. Droupadi Murmu. She assumed office on July 25, 2022.\n",
+      "timestamp": "2025-12-18T01:58:39.099357",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "You're right! Anything else you'd like to know about India or somewhere else?\n",
+      "timestamp": "2025-12-18T01:58:39.106018",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "who is the president of usa?",
+      "timestamp": "2025-12-18T01:58:52.392564",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "According to my information, Donald J. Trump is now the 47th President of the United States. Do you want to know more about him?\n",
+      "timestamp": "2025-12-18T01:58:52.399945",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "According to my information, Donald J. Trump is now the 47th President of the United States. Do you want to know more about him?\n",
+      "timestamp": "2025-12-18T01:58:55.122588",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Yep, Donald Trump is the 47th President. He was inaugurated on January 20, 2025.\n",
+      "timestamp": "2025-12-18T01:58:55.167068",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "when did he won the elections?",
+      "timestamp": "2025-12-18T01:59:09.871193",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Donald Trump won the US presidential election on November 6, 2024. It was considered a historic comeback! Want more details about the election, Yash?\n",
+      "timestamp": "2025-12-18T01:59:09.876987",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "Donald Trump won the US presidential election on November 6, 2024. It was considered a historic comeback! Want more details about the election, Yash?\n",
+      "timestamp": "2025-12-18T01:59:13.350068",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "That's right! It was a pretty big deal, with a lot of news coverage. Should I pull up some of the headlines from that time?\n",
+      "timestamp": "2025-12-18T01:59:13.356218",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "Hey",
+      "timestamp": "2025-12-18T02:06:12.757576",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Hey Yash! What's on your mind today? It's a chilly night here in New York.\n",
+      "timestamp": "2025-12-18T02:06:12.764732",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "Hey Yash! What's on your mind today? It's a chilly night here in New York.\n",
+      "timestamp": "2025-12-18T02:06:14.532235",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Hey! Anything I can help you with?\n",
+      "timestamp": "2025-12-18T02:06:14.537478",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "I am in newark",
+      "timestamp": "2025-12-18T02:06:29.930984",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Oh, you're in Newark? Not too far from me! The weather is probably similar to New York.\n",
+      "timestamp": "2025-12-18T02:06:29.937397",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "Oh, you're in Newark? Not too far from me! The weather is probably similar to New York.\n",
+      "timestamp": "2025-12-18T02:06:30.709918",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Yep, pretty close by! What's up?\n",
+      "timestamp": "2025-12-18T02:06:30.709918",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "who do you think is gonna win next election?",
+      "timestamp": "2025-12-18T02:06:50.460625",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Well, it's still pretty far out, since the election will be in 2028. Voters' memories are short, and a lot can change in the next few years!\n",
+      "timestamp": "2025-12-18T02:06:50.466145",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "Well, it's still pretty far out, since the election will be in 2028. Voters' memories are short, and a lot can change in the next few years!\n",
+      "timestamp": "2025-12-18T02:06:51.498976",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "True, the political landscape could shift dramatically. Are you curious about any potential candidates or key issues?\n",
+      "timestamp": "2025-12-18T02:06:51.544085",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "give it a name",
+      "timestamp": "2025-12-18T02:07:01.568733",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Give what a name, Yash?\n",
+      "timestamp": "2025-12-18T02:07:01.575123",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "Give what a name, Yash?\n",
+      "timestamp": "2025-12-18T02:07:03.278377",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Sorry, I'm not sure what you want me to name. Can you clarify?\n",
+      "timestamp": "2025-12-18T02:07:03.286961",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "name of person who will win next elections",
+      "timestamp": "2025-12-18T02:07:20.714521",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Ah, you want me to predict the winner of the 2028 election! That's tough since it's so far away. Want me to take a shot at some potential frontrunners based on current data?\n",
+      "timestamp": "2025-12-18T02:07:20.721414",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "Ah, you want me to predict the winner of the 2028 election! That's tough since it's so far away. Want me to take a shot at some potential frontrunners based on current data?\n",
+      "timestamp": "2025-12-18T02:07:23.551637",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Okay, based on some polls and speculation, names like Gavin Newsom, J.D. Vance, and even Alexandria Ocasio-Cortez are being floated. It's really early, though! Want more details on who's being discussed?\n",
+      "timestamp": "2025-12-18T02:07:23.555883",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "yeah",
+      "timestamp": "2025-12-18T02:07:32.878049",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Alright, let's dive into who's being talked about. Newsom's getting attention for his California policies, Vance is popular with some conservatives, and AOC energizes many progressives. Want a quick rundown of their platforms?\n",
+      "timestamp": "2025-12-18T02:07:32.928167",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "Alright, let's dive into who's being talked about. Newsom's getting attention for his California policies, Vance is popular with some conservatives, and AOC energizes many progressives. Want a quick rundown of their platforms?\n",
+      "timestamp": "2025-12-18T02:07:36.145446",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Okay, regarding Newsom, he's \u043f\u0440\u043e\u0434\u0432\u0438\u0433\u0430\u0435\u0442 progressive policies in California, especially around abortion access. Want to hear more about his actions?\n",
+      "timestamp": "2025-12-18T02:07:36.155043",
+      "metadata": {}
     }
   ],
-  "updated_at": "2025-12-17T14:38:05.893373"
+  "updated_at": "2025-12-18T02:07:36.155043"
 }

@@ -80,13 +80,23 @@ class PrometheusSearch:
         
         parts = []
         
-        # Tavily's direct answer is usually very accurate
-        if search_results.get("answer"):
-            parts.append(f"Verified answer: {search_results['answer']}")
+        # IMPORTANT: Prioritize actual source content over Tavily's answer
+        # Tavily's answer field sometimes hallucinates (e.g., wrong president)
+        # The actual search result titles/content from sources are more reliable
         
-        # Top sources for reference
-        for i, r in enumerate(search_results.get("results", [])[:3], 1):
-            parts.append(f"Source {i}: {r['title']} - {r['content'][:150]}...")
+        parts.append("=== VERIFIED WEB SEARCH RESULTS ===")
+        parts.append("Use the following SOURCE information to answer. Trust the sources, not summaries.")
+        parts.append("")
+        
+        # Top sources - these are the actual facts
+        for i, r in enumerate(search_results.get("results", [])[:5], 1):
+            parts.append(f"SOURCE {i}: {r['title']}")
+            parts.append(f"Content: {r['content'][:300]}")
+            parts.append(f"URL: {r.get('url', 'N/A')}")
+            parts.append("")
+        
+        parts.append("=== END SEARCH RESULTS ===")
+        parts.append("IMPORTANT: Base your answer ONLY on the actual source content above.")
         
         return "\n".join(parts)
     
