@@ -1056,7 +1056,127 @@
       "content": "Hey! Do you have any specific questions about the election you want to explore? Maybe something about ASIVC, since you're familiar with it?\n",
       "timestamp": "2025-12-20T20:45:11.331904",
       "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "hey there",
+      "timestamp": "2025-12-20T21:18:10.173265",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Hey! Did you want to discuss ASIVC more or go back to other election topics?\n",
+      "timestamp": "2025-12-20T21:18:10.311640",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "Hey! Did you want to discuss ASIVC more or go back to other election topics?\n",
+      "timestamp": "2025-12-20T21:18:12.295075",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Hey! Want to dive into ASIVC elections, or something different?\n",
+      "timestamp": "2025-12-20T21:18:12.295528",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "hey there",
+      "timestamp": "2025-12-20T22:21:09.268903",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Hey! Ready to talk ASIVC again, or should we switch gears?\n",
+      "timestamp": "2025-12-20T22:21:09.287678",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "can you tell me how many centuries kohli has scored?",
+      "timestamp": "2025-12-20T22:22:25.440741",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Hey! Virat Kohli has scored 84 centuries in international cricket. Want a breakdown by format?\n",
+      "timestamp": "2025-12-20T22:22:25.444380",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "hey there",
+      "timestamp": "2025-12-20T22:45:17.064934",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Hey! Did you want to discuss the election or something else?\n",
+      "timestamp": "2025-12-20T22:45:17.074785",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "hey there whats upp!",
+      "timestamp": "2025-12-20T22:54:48.205307",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Hey! Still interested in the election, or did you have something else on your mind?\n",
+      "timestamp": "2025-12-20T22:54:48.211685",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "can you tell me who is the president of India",
+      "timestamp": "2025-12-20T22:55:00.328312",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "The President of India is Smt Droupadi Murmu. She was paid floral tributes to Shri Pranab Mukherjee, former President of India, on his birth anniversary on December 11, 2025.\n",
+      "timestamp": "2025-12-20T22:55:00.334353",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "give script for a fibonacci sereis",
+      "timestamp": "2025-12-20T22:55:25.678942",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Hey! Sure, here's a Python script for a Fibonacci series:\n\n```python\ndef fibonacci(n):\n    a, b = 0, 1\n    for i in range(n):\n        print(a)\n        a, b = b, a + b\n\nfibonacci(10)\n```\n\nWant me to explain how it works?\n",
+      "timestamp": "2025-12-20T22:55:25.692792",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "can you help me make a clone of Amazon?",
+      "timestamp": "2025-12-20T22:55:46.998099",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "I sure can, Yash. You can build an Amazon clone using HTML, CSS, and JavaScript, or even with no code at all using platforms like Bubble. Would you like to focus on one of those approaches?\n",
+      "timestamp": "2025-12-20T22:55:47.003025",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "what is the paper Titan from google/",
+      "timestamp": "2025-12-20T22:56:38.273302",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Google's \"Titans\" paper introduces a new AI model architecture that includes a novel neural memory system. It combines short and long-term memory components to improve learning, retention, and information retrieval at test time. Want more details on how it works?\n",
+      "timestamp": "2025-12-20T22:56:38.276882",
+      "metadata": {}
     }
   ],
-  "updated_at": "2025-12-20T20:45:11.331904"
+  "updated_at": "2025-12-20T22:56:38.276882"
 }
