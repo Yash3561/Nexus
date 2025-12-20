@@ -984,7 +984,79 @@
       "content": "Hey! What part of the election are you most curious about right now?\n",
       "timestamp": "2025-12-18T02:38:04.037075",
       "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "hey there",
+      "timestamp": "2025-12-18T02:58:50.332147",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Hey! Ready to pick up our election conversation where we left off? Or did something else come up?\n",
+      "timestamp": "2025-12-18T02:58:50.334844",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "Hey! Ready to pick up our election conversation where we left off? Or did something else come up?\n",
+      "timestamp": "2025-12-18T02:58:52.993072",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Hey! Do you want to dive deeper into specific election topics, like the Electoral College?\n",
+      "timestamp": "2025-12-18T02:58:52.998806",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "Hey tehre",
+      "timestamp": "2025-12-20T17:07:30.389384",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Hey! Still focused on the election, or is there something else you're curious about?\n",
+      "timestamp": "2025-12-20T17:07:30.401256",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "Hey! Still focused on the election, or is there something else you're curious about?\n",
+      "timestamp": "2025-12-20T17:07:34.228180",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Hey! Is there anything specific about the election that you want to discuss?\n",
+      "timestamp": "2025-12-20T17:07:34.237097",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "Hey there",
+      "timestamp": "2025-12-20T20:45:09.350821",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Hey! Back for more election discussion, Yash?\n",
+      "timestamp": "2025-12-20T20:45:09.364546",
+      "metadata": {}
+    },
+    {
+      "role": "user",
+      "content": "Hey! Back for more election discussion, Yash?\n",
+      "timestamp": "2025-12-20T20:45:11.324464",
+      "metadata": {}
+    },
+    {
+      "role": "nexus",
+      "content": "Hey! Do you have any specific questions about the election you want to explore? Maybe something about ASIVC, since you're familiar with it?\n",
+      "timestamp": "2025-12-20T20:45:11.331904",
+      "metadata": {}
     }
   ],
-  "updated_at": "2025-12-18T02:38:04.037075"
+  "updated_at": "2025-12-20T20:45:11.331904"
 }

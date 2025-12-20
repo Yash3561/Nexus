@@ -1,11 +1,19 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import CitationCards from "./CitationCards";
+
+interface Source {
+    title: string;
+    url: string;
+    domain: string;
+}
 
 interface Message {
     role: "user" | "nexus";
     content: string;
     timestamp: Date;
+    sources?: Source[];
 }
 
 interface ChatDisplayProps {
@@ -48,14 +56,21 @@ export default function ChatDisplay({ messages, isProcessing }: ChatDisplayProps
                             </div>
 
                             {/* Message */}
-                            <div className={`rounded-2xl px-4 py-3 ${message.role === "user"
-                                ? "bg-[#8ab4f8] text-[#1a1a1a]"
-                                : "bg-[#2d2d2d] text-[#e8eaed]"
-                                }`}>
-                                <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{message.content}</p>
-                                <p className={`text-xs mt-2 ${message.role === "user" ? "text-[#1a1a1a]/60" : "text-[#9aa0a6]"}`}>
-                                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                </p>
+                            <div className="flex flex-col">
+                                <div className={`rounded-2xl px-4 py-3 ${message.role === "user"
+                                    ? "bg-[#8ab4f8] text-[#1a1a1a]"
+                                    : "bg-[#2d2d2d] text-[#e8eaed]"
+                                    }`}>
+                                    <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                                    <p className={`text-xs mt-2 ${message.role === "user" ? "text-[#1a1a1a]/60" : "text-[#9aa0a6]"}`}>
+                                        {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </p>
+                                </div>
+
+                                {/* Citation Cards - Show sources for NEXUS messages */}
+                                {message.role === "nexus" && message.sources && message.sources.length > 0 && (
+                                    <CitationCards sources={message.sources} />
+                                )}
                             </div>
                         </div>
                     </div>

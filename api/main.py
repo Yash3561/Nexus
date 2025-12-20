@@ -225,8 +225,9 @@ async def stream_response(input_data: VoiceInput):
             gaia = get_gaia()
             gaia_context = await gaia.build_context()
             
-            # Get PROMETHEUS search context
-            search_context = await search_if_needed(input_data.text)
+            # Get PROMETHEUS search context WITH sources for citations
+            from services.prometheus import search_with_sources
+            search_context, sources = await search_with_sources(input_data.text)
             
             # Combine contexts
             full_context = ""
@@ -247,8 +248,8 @@ async def stream_response(input_data: VoiceInput):
             # Store in memory after complete
             memory.add_exchange(input_data.text, full_response)
             
-            # Send done event
-            yield f"data: {json.dumps({'done': True, 'full_text': full_response})}\n\n"
+            # Send done event WITH sources for citation display
+            yield f"data: {json.dumps({'done': True, 'full_text': full_response, 'sources': sources})}\n\n"
             
         except Exception as e:
             print(f"[ERROR] Streaming failed: {e}")

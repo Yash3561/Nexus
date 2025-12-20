@@ -152,3 +152,39 @@ async def search_if_needed(user_query: str) -> str:
     
     print(f"[PROMETHEUS] Not a question, skipping search: {user_query[:30]}...")
     return ""
+
+
+async def search_with_sources(user_query: str) -> tuple[str, list[dict]]:
+    """
+    Search and return both context string AND list of sources for citation display.
+    Returns: (context_string, [{"title": ..., "url": ..., "domain": ...}, ...])
+    """
+    sources = []
+    
+    if is_question(user_query):
+        print(f"[PROMETHEUS] Searching with sources: {user_query[:50]}...")
+        prometheus = get_prometheus()
+        results = await prometheus.search(user_query)
+        
+        # Extract sources for UI
+        for r in results.get("results", [])[:4]:
+            url = r.get("url", "")
+            domain = ""
+            if url:
+                try:
+                    from urllib.parse import urlparse
+                    domain = urlparse(url).netloc.replace("www.", "")
+                except:
+                    domain = url[:30]
+            
+            sources.append({
+                "title": r.get("title", "")[:80],
+                "url": url,
+                "domain": domain
+            })
+        
+        context = prometheus.format_for_context(results)
+        return context, sources
+    
+    return "", sources
+

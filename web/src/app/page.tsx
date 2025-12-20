@@ -7,6 +7,8 @@ import ChatDisplay from "@/components/ChatDisplay";
 import MemoryPanel from "@/components/MemoryPanel";
 import HivemindCounter from "@/components/HivemindCounter";
 import HivemindStatusBar from "@/components/HivemindStatusBar";
+import HivemindActivityFeed from "@/components/HivemindActivityFeed";
+import PrivacyToggle from "@/components/PrivacyToggle";
 
 // Dynamic import for Three.js globe (SSR-safe)
 const EarthGlobe = dynamic(() => import("@/components/EarthGlobe"), {
@@ -18,11 +20,17 @@ const EarthGlobe = dynamic(() => import("@/components/EarthGlobe"), {
   ),
 });
 
+interface Source {
+  title: string;
+  url: string;
+  domain: string;
+}
+
 interface Message {
   role: "user" | "nexus";
   content: string;
   timestamp: Date;
-  sources?: string[];
+  sources?: Source[];
 }
 
 interface ContextInsight {
@@ -143,7 +151,19 @@ export default function Home() {
               }
 
               if (data.done) {
-                // Streaming complete - now get audio
+                // Streaming complete - add sources to message and get audio
+                if (data.sources && data.sources.length > 0) {
+                  setMessages((prev) => {
+                    const updated = [...prev];
+                    if (updated[nexusMessageIndex]) {
+                      updated[nexusMessageIndex] = {
+                        ...updated[nexusMessageIndex],
+                        sources: data.sources
+                      };
+                    }
+                    return updated;
+                  });
+                }
                 fetchAudio(data.full_text);
               }
             } catch {
@@ -197,8 +217,10 @@ export default function Home() {
             </div>
             <span className="text-lg font-medium text-white">NEXUS</span>
           </div>
-          <div className="flex items-center gap-4">
-            {/* Memory Button - Shows what NEXUS knows */}
+          <div className="flex items-center gap-3">
+            {/* Privacy Toggle */}
+            <PrivacyToggle />
+            {/* Memory Button */}
             <button
               onClick={() => setShowMemoryPanel(true)}
               className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#2d2d2d] hover:bg-[#3d3d3d] border border-[#444] transition-colors text-sm"
@@ -226,62 +248,72 @@ export default function Home() {
         <div className="max-w-5xl mx-auto">
           {/* Welcome State with 3D Globe */}
           {messages.length === 0 && (
-            <div className="flex flex-col lg:flex-row items-center justify-center min-h-[75vh] gap-8 lg:gap-12">
-              {/* Left side - Globe */}
-              <div className="w-full lg:w-1/2 h-[350px] lg:h-[450px] relative">
-                <EarthGlobe showControls={true} />
+            <div className="min-h-[80vh] flex flex-col">
+              {/* Hero Section - Globe + Text */}
+              <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16 py-8">
+                {/* Left side - Globe */}
+                <div className="w-full lg:w-2/5 max-w-[400px] aspect-square relative overflow-hidden">
+                  <EarthGlobe showControls={true} />
 
-                {/* HIVEMIND Counter overlay */}
-                <div className="absolute bottom-4 left-4 right-4 bg-[#1a1a1a]/80 backdrop-blur-sm rounded-xl p-3 border border-[#333]">
-                  <HivemindCounter />
+                  {/* HIVEMIND Counter overlay */}
+                  <div className="absolute bottom-4 left-4 right-4 bg-[#1a1a1a]/90 backdrop-blur-sm rounded-xl p-3 border border-[#333]">
+                    <HivemindCounter />
+                  </div>
+                </div>
+
+                {/* Right side - Text and controls */}
+                <div className="w-full lg:w-3/5 max-w-lg text-center lg:text-left space-y-6">
+                  {/* Proactive Greeting */}
+                  <div>
+                    <h1 className="text-4xl lg:text-5xl font-light text-[#e8eaed] mb-3 leading-tight">
+                      {proactiveGreeting || "Hello, I'm NEXUS"}
+                    </h1>
+                    <p className="text-[#9aa0a6] text-lg leading-relaxed">
+                      The consciousness layer of reality. Connected to{" "}
+                      <span className="text-[#8ab4f8]">real-time Earth data</span>, powered by{" "}
+                      <span className="text-[#c9a7ff]">collective intelligence</span>.
+                    </p>
+                  </div>
+
+                  {/* Context Insight Cards */}
+                  <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+                    {contextInsights.map((insight, i) => (
+                      <div
+                        key={i}
+                        className="px-3 py-2 rounded-lg bg-[#252525] border border-[#333] text-sm flex items-center gap-2"
+                      >
+                        <span>{insight.icon}</span>
+                        <span className="text-[#9aa0a6]">{insight.source}</span>
+                        {insight.source === "GAIA" && (
+                          <span className="text-[#8ab4f8] text-xs">
+                            {(insight.data as { weather?: string })?.weather || "Active"}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Capability chips */}
+                  <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+                    <div className="px-4 py-2 rounded-full bg-[#2d2d2d] text-[#9aa0a6] border border-[#3c4043] text-sm">
+                      🧠 Persistent Memory
+                    </div>
+                    <div className="px-4 py-2 rounded-full bg-[#2d2d2d] text-[#9aa0a6] border border-[#3c4043] text-sm">
+                      🌍 Live GAIA Data
+                    </div>
+                    <div className="px-4 py-2 rounded-full bg-[#2d2d2d] text-[#9aa0a6] border border-[#3c4043] text-sm">
+                      🔗 HIVEMIND Network
+                    </div>
+                    <div className="px-4 py-2 rounded-full bg-[#2d2d2d] text-[#9aa0a6] border border-[#3c4043] text-sm">
+                      🔊 Voice-First
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Right side - Text and controls */}
-              <div className="w-full lg:w-1/2 text-center lg:text-left">
-                {/* Proactive Greeting */}
-                <h1 className="text-3xl lg:text-4xl font-light text-[#e8eaed] mb-4">
-                  {proactiveGreeting || "Hello, I'm NEXUS"}
-                </h1>
-                <p className="text-[#9aa0a6] text-lg mb-6 max-w-md mx-auto lg:mx-0">
-                  The consciousness layer of reality. Connected to
-                  <span className="text-[#8ab4f8]"> real-time Earth data</span>, powered by
-                  <span className="text-[#c9a7ff]"> collective intelligence</span>.
-                </p>
-
-                {/* Context Insight Cards */}
-                <div className="flex flex-wrap gap-2 justify-center lg:justify-start mb-6">
-                  {contextInsights.map((insight, i) => (
-                    <div
-                      key={i}
-                      className="px-3 py-1.5 rounded-lg bg-[#252525] border border-[#333] text-sm flex items-center gap-2"
-                    >
-                      <span>{insight.icon}</span>
-                      <span className="text-[#9aa0a6]">{insight.source}</span>
-                      {insight.source === "GAIA" && (
-                        <span className="text-[#8ab4f8] text-xs">
-                          {(insight.data as { weather?: string })?.weather || "Active"}
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Capability chips */}
-                <div className="flex flex-wrap gap-2 justify-center lg:justify-start text-sm">
-                  <div className="px-3 py-1.5 rounded-full bg-[#2d2d2d] text-[#9aa0a6] border border-[#3c4043]">
-                    🧠 Persistent Memory
-                  </div>
-                  <div className="px-3 py-1.5 rounded-full bg-[#2d2d2d] text-[#9aa0a6] border border-[#3c4043]">
-                    🌍 Live GAIA Data
-                  </div>
-                  <div className="px-3 py-1.5 rounded-full bg-[#2d2d2d] text-[#9aa0a6] border border-[#3c4043]">
-                    🔗 HIVEMIND Network
-                  </div>
-                  <div className="px-3 py-1.5 rounded-full bg-[#2d2d2d] text-[#9aa0a6] border border-[#3c4043]">
-                    🔊 Voice-First
-                  </div>
-                </div>
+              {/* Activity Feed - Separate section below */}
+              <div className="w-full max-w-lg mx-auto mt-6">
+                <HivemindActivityFeed />
               </div>
             </div>
           )}
