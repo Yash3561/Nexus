@@ -303,67 +303,96 @@ async def get_echo_profile(user_id: str = "demo-user", session_id: str = "demo-s
 @app.get("/api/echo/greeting")
 async def get_proactive_greeting(user_id: str = "demo-user"):
     """
-    Generate a proactive greeting based on context.
-    This is what makes NEXUS different - it can greet YOU first based on:
-    - Time of day
-    - Weather conditions
-    - What it knows about you
-    - Last conversation
+    SENTINEL MODE: Generate a Situation Report greeting.
+    Makes NEXUS feel like an AI that watched the world while you were away.
     """
     from services.memory import get_memory
     from services.gaia import get_gaia
-    from services.gemini import generate_response
+    from consumers.gaia_consumer import get_cached_gaia_data
     
     memory = get_memory(user_id)
     gaia = get_gaia()
     
-    user_name = memory.get_user_name()
+    user_name = memory.get_user_name() or "Commander"
     time_data = gaia.get_current_time()
     weather = await gaia.get_weather()
     
-    # Get last conversation topic if any
+    # Get cached GAIA real-time data (from Kafka)
+    gaia_realtime = get_cached_gaia_data()
+    
+    # Get last conversation topic
     recent_messages = memory.conversation.get_context_window(2)
     last_topic = ""
     if recent_messages:
-        last_msg = recent_messages[-1].get("content", "")[:50]
-        last_topic = f"Last time you mentioned: {last_msg}..."
+        for msg in reversed(recent_messages):
+            if msg.get("role") == "user":
+                content = msg.get("content", "")[:60]
+                if content:
+                    last_topic = content
+                break
     
-    # Build proactive context
+    # Build time context
     hour = int(time_data.get("time", "12:00").split(":")[0])
     time_greeting = "Good morning" if hour < 12 else "Good afternoon" if hour < 17 else "Good evening"
     
-    # Weather-based comment
-    weather_comment = ""
+    # Build status items
+    status_items = []
+    
+    # Weather status
     if weather.get("description"):
-        temp = weather.get("temp", 0)
-        if temp < 32:
-            weather_comment = "Bundle up, it's freezing out there! "
-        elif temp > 85:
-            weather_comment = "It's quite hot today! "
-        elif "rain" in weather.get("description", "").lower():
-            weather_comment = "Looks like rain today. "
+        temp = weather.get("temp") or weather.get("temperature", 0)
+        status_items.append(f"Temperature: {temp}°F, {weather.get('description')}")
     
-    # Build greeting
-    greeting = f"{time_greeting}"
-    if user_name:
-        greeting += f", {user_name}"
-    greeting += "! "
-    greeting += weather_comment
+    # Get alerts from GAIA cache
+    alerts = gaia_realtime.get("alerts", [])
+    if alerts:
+        latest_alert = alerts[0]
+        status_items.append(f"Alert: {latest_alert.get('message', 'No active alerts')}")
     
-    if last_topic and len(recent_messages) > 0:
-        greeting += "Ready to pick up where we left off?"
-    else:
-        greeting += "How can I help you today?"
+    # Memory status
+    memory_facts = memory.get_user_facts()
+    memory_count = len(memory_facts) if isinstance(memory_facts, list) else 0
+    
+    # Build the Sentinel-style greeting
+    greeting_parts = [
+        f"**System Online.** {time_greeting}, {user_name}.",
+        "",
+        "**SITREP:**"
+    ]
+    
+    for item in status_items:
+        greeting_parts.append(f"• {item}")
+    
+    if last_topic:
+        greeting_parts.append("")
+        greeting_parts.append(f"**Memory:** We last discussed: \"{last_topic}...\"")
+    
+    if memory_count > 0:
+        greeting_parts.append(f"**Profile:** {memory_count} facts remembered about you.")
+    
+    greeting_parts.append("")
+    greeting_parts.append("What are your orders?")
+    
+    full_greeting = "\n".join(greeting_parts)
+    
+    # Also return a simple version for the UI header
+    simple_greeting = f"{time_greeting}, {user_name}"
     
     return {
-        "greeting": greeting,
+        "greeting": simple_greeting,
+        "sitrep": full_greeting,
         "context": {
             "time_of_day": time_greeting.split()[-1].lower(),
             "weather": weather.get("description", "unknown"),
-            "user_known": user_name is not None,
-            "has_history": len(recent_messages) > 0
+            "temperature": weather.get("temp") or weather.get("temperature"),
+            "user_known": user_name != "Commander",
+            "has_history": len(recent_messages) > 0,
+            "last_topic": last_topic,
+            "alerts": alerts[:2] if alerts else [],
+            "memory_facts_count": memory_count
         },
-        "proactive": True
+        "proactive": True,
+        "mode": "sentinel"
     }
 
 
@@ -422,15 +451,52 @@ async def get_context_insights(query: str = ""):
     
     return {"insights": insights}
 
+
+# ============ GAIA STREAMING (Confluent Kafka) ============
+
+@app.get("/api/gaia/stream")
+async def gaia_stream():
+    """
+    SSE stream of real-time GAIA data from Confluent Kafka
+    This proves "Real-Time Event Architecture" for Confluent track
+    """
+    from fastapi.responses import StreamingResponse
+    from consumers.gaia_consumer import gaia_sse_stream
+    
+    return StreamingResponse(
+        gaia_sse_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+        }
+    )
+
+
+@app.get("/api/gaia/realtime")
+async def gaia_realtime():
+    """Get cached real-time GAIA data (non-streaming)"""
+    from consumers.gaia_consumer import get_cached_gaia_data
+    return get_cached_gaia_data()
+
+
 # ============ STARTUP ============
 
 @app.on_event("startup")
 async def startup_event():
+    import asyncio
+    from consumers.gaia_consumer import consume_gaia_stream
+    
     print("[NEXUS] API Starting...")
     print("[NEXUS] Gemini (Vertex AI): Active")
     print("[NEXUS] ECHO Memory: Active")
     print("[NEXUS] GAIA Data Streams: Active")
     print("[NEXUS] ElevenLabs TTS: Active")
+    
+    # Start background Kafka consumer for GAIA real-time data
+    asyncio.create_task(consume_gaia_stream())
+    print("[NEXUS] GAIA Kafka Consumer: Started")
+    
     if not DD_ENABLED:
         print("[NEXUS] Datadog: DISABLED (Local Mode)")
     else:
