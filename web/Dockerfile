@@ -14,7 +14,9 @@ COPY . .
 
 # Build the application
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npm run build
+
+# Build with verbose output
+RUN npm run build || (cat /root/.npm/_logs/*.log && exit 1)
 
 # Production stage
 FROM node:20-alpine AS runner
@@ -23,6 +25,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
 
 # Create non-root user
 RUN addgroup --system --gid 1001 nodejs
@@ -35,8 +38,6 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
 
-# Cloud Run uses PORT env variable
-ENV PORT=3000
 EXPOSE 3000
 
 CMD ["node", "server.js"]
